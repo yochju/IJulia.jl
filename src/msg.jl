@@ -79,8 +79,9 @@ function recv_ipython(socket)
     parent_header = bytestring(recv(socket))
     metadata = bytestring(recv(socket))
     content = bytestring(recv(socket))
-    if signature != hmac(header, parent_header, metadata, content)
-        error("Invalid HMAC signature") # What should we do here?
+    expected_signature = hmac(header, parent_header, metadata, content)
+    if signature ≠ expected_signature
+        error("Invalid HMAC signature: Got $signature but expected $expected_signature") # What should we do here?
     end
     m = Msg(idents, JSON.parse(header), JSON.parse(content), JSON.parse(parent_header), JSON.parse(metadata))
     @vprintln("RECEIVED $m")
